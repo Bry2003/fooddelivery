@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using FoodDelivery.Models;
+using Smtp;
 namespace FoodDelivery.Data
 {
     public class FoodData
@@ -37,6 +38,8 @@ namespace FoodDelivery.Data
 
             return foods;
         }
+        
+        private EmailService _emailService = new EmailService();
 
         public int AddFood(Food food)
         {
@@ -53,6 +56,11 @@ namespace FoodDelivery.Data
                 connection.Open();
                 int rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
+               
+                if (rowsAffected > 0)
+                {
+                    _emailService.SendEmail("user@example.com", "Food Added", $"The food item {food.Name} has been added.");
+                }
 
                 return rowsAffected;
             }
@@ -72,7 +80,12 @@ namespace FoodDelivery.Data
                 connection.Open();
                 int rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
-
+               
+                
+                if (rowsAffected > 0)
+                {
+                    _emailService.SendEmail("user@example.com", "Food Updated", $"The food item {food.Name} has been updated.");
+                }
                 return rowsAffected;
             }
         }
@@ -95,4 +108,3 @@ namespace FoodDelivery.Data
         }
     }
 }
-
